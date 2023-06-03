@@ -18,11 +18,6 @@ import com.facebook.react.uimanager.events.Event;
 
   public static final String EVENT_NAME = "topRequestClose";
 
-  @Deprecated
-  protected RequestCloseEvent(int viewTag) {
-    this(ViewUtil.NO_SURFACE_ID, viewTag);
-  }
-
   protected RequestCloseEvent(int surfaceId, int viewTag) {
     super(surfaceId, viewTag);
   }
