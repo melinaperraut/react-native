@@ -31,8 +31,8 @@ import com.facebook.infer.annotation.Assertions;
    * This should only be called on the native modules/shadow nodes thread.
    */
   public static Point getModalHostSize(Context context) {
-    WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
-    Display display = Assertions.assertNotNull(wm).getDefaultDisplay();
+    WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+    Display display = Assertions.assertNotNull(windowManager).getDefaultDisplay();
     // getCurrentSizeRange will return the min and max width and height that the window can be
     display.getCurrentSizeRange(MIN_POINT, MAX_POINT);
     // getSize will return the dimensions of the screen in its current orientation
@@ -40,8 +40,8 @@ import com.facebook.infer.annotation.Assertions;
 
     int[] attrs = {android.R.attr.windowFullscreen};
     Resources.Theme theme = context.getTheme();
-    TypedArray ta = theme.obtainStyledAttributes(attrs);
-    boolean windowFullscreen = ta.getBoolean(0, false);
+    TypedArray typedArray = theme.obtainStyledAttributes(attrs);
+    boolean windowFullscreen = typedArray.getBoolean(0, false);
 
     // We need to add the status bar height to the height if we have a fullscreen window,
     // because Display.getCurrentSizeRange doesn't include it.
