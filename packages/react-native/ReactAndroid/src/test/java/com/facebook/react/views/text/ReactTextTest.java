@@ -450,6 +450,38 @@ public class ReactTextTest {
     assertThat(textView.getEllipsize()).isEqualTo(TextUtils.TruncateAt.END);
   }
 
+  @Test
+  public void testTextAlignmentApplied() {
+    UIManagerModule uiManager = getUIManagerModule();
+
+    ReactRootView rootView =
+        createText(
+            uiManager,
+            JavaOnlyMap.of(ViewProps.TEXT_ALIGNMENT, "center"),
+            JavaOnlyMap.of(ReactRawTextShadowNode.PROP_TEXT, "test text"));
+
+    TextView textView = (TextView) rootView.getChildAt(0);
+    assertThat(textView.getTextAlignment()).isEqualTo(View.TEXT_ALIGNMENT_CENTER);
+  }
+
+  @Test
+  public void testCustomFontFamilyApplied() {
+    UIManagerModule uiManager = getUIManagerModule();
+
+    ReactRootView rootView =
+        createText(
+            uiManager,
+            JavaOnlyMap.of(ViewProps.FONT_FAMILY, "CustomFont"),
+            JavaOnlyMap.of(ReactRawTextShadowNode.PROP_TEXT, "test text"));
+
+    CustomStyleSpan customStyleSpan =
+        getSingleSpan((TextView) rootView.getChildAt(0), CustomStyleSpan.class);
+    assertThat(customStyleSpan.getFontFamily()).isEqualTo("CustomFont");
+    assertThat(customStyleSpan.getStyle() & Typeface.ITALIC).isZero();
+    assertThat(customStyleSpan.getWeight() & Typeface.BOLD).isZero();
+  }
+
+
   @TargetApi(Build.VERSION_CODES.O)
   @Test
   public void testTextAlignJustifyApplied() {
