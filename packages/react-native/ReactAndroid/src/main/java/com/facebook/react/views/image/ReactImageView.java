@@ -75,7 +75,7 @@ public class ReactImageView extends GenericDraweeView {
   public void updateCallerContext(@Nullable Object callerContext) {
     if (!Objects.equal(mCallerContext, callerContext)) {
       mCallerContext = callerContext;
-      mIsDirty = true;
+      mNeedsUpdate = true;
     }
   }
 
@@ -122,7 +122,7 @@ public class ReactImageView extends GenericDraweeView {
   private @Nullable float[] mBorderCornerRadii;
   private ScalingUtils.ScaleType mScaleType = ImageResizeMode.defaultValue();
   private Shader.TileMode mTileMode = ImageResizeMode.defaultTileMode();
-  private boolean mIsDirty;
+  private boolean mNeedsUpdate;
   private final AbstractDraweeControllerBuilder mDraweeControllerBuilder;
   private @Nullable TilePostprocessor mTilePostprocessor;
   private @Nullable IterativeBoxBlurPostProcessor mIterativeBoxBlurPostProcessor;
@@ -213,7 +213,7 @@ public class ReactImageView extends GenericDraweeView {
           };
     }
 
-    mIsDirty = true;
+    mNeedsUpdate = true;
   }
 
   public void setBlurRadius(float blurRadius) {
@@ -224,7 +224,7 @@ public class ReactImageView extends GenericDraweeView {
     } else {
       mIterativeBoxBlurPostProcessor = new IterativeBoxBlurPostProcessor(2, pixelBlurRadius);
     }
-    mIsDirty = true;
+    mNeedsUpdate = true;
   }
 
   @Override
@@ -232,21 +232,21 @@ public class ReactImageView extends GenericDraweeView {
     if (mBackgroundColor != backgroundColor) {
       mBackgroundColor = backgroundColor;
       mBackgroundImageDrawable = new RoundedColorDrawable(backgroundColor);
-      mIsDirty = true;
+      mNeedsUpdate = true;
     }
   }
 
   public void setBorderColor(int borderColor) {
     if (mBorderColor != borderColor) {
       mBorderColor = borderColor;
-      mIsDirty = true;
+      mNeedsUpdate = true;
     }
   }
 
   public void setOverlayColor(int overlayColor) {
     if (mOverlayColor != overlayColor) {
       mOverlayColor = overlayColor;
-      mIsDirty = true;
+      mNeedsUpdate = true;
     }
   }
 
@@ -254,14 +254,14 @@ public class ReactImageView extends GenericDraweeView {
     float newBorderWidth = PixelUtil.toPixelFromDIP(borderWidth);
     if (!FloatUtil.floatsEqual(mBorderWidth, newBorderWidth)) {
       mBorderWidth = newBorderWidth;
-      mIsDirty = true;
+      mNeedsUpdate = true;
     }
   }
 
   public void setBorderRadius(float borderRadius) {
     if (!FloatUtil.floatsEqual(mBorderRadius, borderRadius)) {
       mBorderRadius = borderRadius;
-      mIsDirty = true;
+      mNeedsUpdate = true;
     }
   }
 
@@ -273,14 +273,14 @@ public class ReactImageView extends GenericDraweeView {
 
     if (!FloatUtil.floatsEqual(mBorderCornerRadii[position], borderRadius)) {
       mBorderCornerRadii[position] = borderRadius;
-      mIsDirty = true;
+      mNeedsUpdate = true;
     }
   }
 
   public void setScaleType(ScalingUtils.ScaleType scaleType) {
     if (mScaleType != scaleType) {
       mScaleType = scaleType;
-      mIsDirty = true;
+      mNeedsUpdate = true;
     }
   }
 
@@ -292,14 +292,14 @@ public class ReactImageView extends GenericDraweeView {
       } else {
         mTilePostprocessor = null;
       }
-      mIsDirty = true;
+      mNeedsUpdate = true;
     }
   }
 
   public void setResizeMethod(ImageResizeMethod resizeMethod) {
     if (mResizeMethod != resizeMethod) {
       mResizeMethod = resizeMethod;
-      mIsDirty = true;
+      mNeedsUpdate = true;
     }
   }
 
@@ -343,7 +343,7 @@ public class ReactImageView extends GenericDraweeView {
     for (ImageSource src : tmpSources) {
       mSources.add(src);
     }
-    mIsDirty = true;
+    mNeedsUpdate = true;
   }
 
   public void setDefaultSource(@Nullable String name) {
@@ -351,7 +351,7 @@ public class ReactImageView extends GenericDraweeView {
         ResourceDrawableIdHelper.getInstance().getResourceDrawable(getContext(), name);
     if (!Objects.equal(mDefaultImageDrawable, newDefaultDrawable)) {
       mDefaultImageDrawable = newDefaultDrawable;
-      mIsDirty = true;
+      mNeedsUpdate = true;
     }
   }
 
@@ -362,7 +362,7 @@ public class ReactImageView extends GenericDraweeView {
         drawable != null ? (Drawable) new AutoRotateDrawable(drawable, 1000) : null;
     if (!Objects.equal(mLoadingImageDrawable, newLoadingIndicatorSource)) {
       mLoadingImageDrawable = newLoadingIndicatorSource;
-      mIsDirty = true;
+      mNeedsUpdate = true;
     }
   }
 
@@ -402,7 +402,7 @@ public class ReactImageView extends GenericDraweeView {
   }
 
   public void maybeUpdateView() {
-    if (!mIsDirty) {
+    if (!mNeedsUpdate) {
       return;
     }
 
@@ -526,7 +526,7 @@ public class ReactImageView extends GenericDraweeView {
     }
 
     setController(mDraweeControllerBuilder.build());
-    mIsDirty = false;
+    mNeedsUpdate = false;
 
     // Reset again so the DraweeControllerBuilder clears all it's references. Otherwise, this causes
     // a memory leak.
@@ -536,7 +536,7 @@ public class ReactImageView extends GenericDraweeView {
   // VisibleForTesting
   public void setControllerListener(ControllerListener controllerListener) {
     mControllerForTesting = controllerListener;
-    mIsDirty = true;
+    mNeedsUpdate = true;
     maybeUpdateView();
   }
 
@@ -549,7 +549,7 @@ public class ReactImageView extends GenericDraweeView {
   protected void onSizeChanged(int w, int h, int oldw, int oldh) {
     super.onSizeChanged(w, h, oldw, oldh);
     if (w > 0 && h > 0) {
-      mIsDirty = mIsDirty || hasMultipleSources() || isTiled();
+      mNeedsUpdate = mNeedsUpdate || hasMultipleSources() || isTiled();
       maybeUpdateView();
     }
   }
